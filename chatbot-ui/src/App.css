@@ -46,6 +46,7 @@ body {
   height: 100%;
   position: relative;
   background-image: radial-gradient(circle at top center, #1e1b4b 0%, var(--bg-color) 50%);
+  margin-left: 260px;
 }
 
 .app-header {
@@ -73,6 +74,53 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.model-selector,
+.temperature-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.model-selector label,
+.temperature-control label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.temperature-control input[type="range"] {
+  width: 100px;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.temperature-control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.temperature-control input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
 }
 
 .user-info {

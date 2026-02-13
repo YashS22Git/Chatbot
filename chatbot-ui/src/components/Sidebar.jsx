@@ -11,8 +11,8 @@ const Sidebar = ({ sessions, currentSessionId, onSelectSession, onNewChat, user,
                 </button>
             </div>
             <div className="sessions-list">
-                {sessions.map(session => (
-                    <div key={session.session_id} className={`session-item ${session.session_id === currentSessionId ? 'active' : ''}`}>
+                {sessions.map((session, index) => (
+                    <div key={session.session_id || `session-${index}`} className={`session-item ${session.session_id === currentSessionId ? 'active' : ''}`}>
                         <div className="session-content" onClick={() => onSelectSession(session.session_id)}>
                             <div className="session-title">{session.title}</div>
                             <div className="session-date">{new Date(session.created_at).toLocaleDateString()}</div>

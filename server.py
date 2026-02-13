@@ -48,6 +48,7 @@ class ChatRequest(BaseModel):
     messages: list
     session_id: Optional[str] = None
     user_id: str
+    temperature: Optional[float] = 0.7
 
 class CreateSessionRequest(BaseModel):
     title: str = "New Chat"
@@ -125,23 +126,33 @@ async def chat(request: ChatRequest):
             })
 
         def generate():
-            full_response = ""
-            stream = ollama.chat(model=request.model, messages=request.messages, stream=True)
-            for chunk in stream:
-                content = chunk['message']['content']
-                if content:
-                    yield content
-                    full_response += content
-            
-            # Save assistant message
-            if request.session_id and full_response:
-                messages_collection.insert_one({
-                    "user_id": request.user_id,
-                    "session_id": request.session_id,
-                    "role": "assistant",
-                    "content": full_response,
-                    "created_at": datetime.now()
-                })
+            try:
+                full_response = ""
+                stream = ollama.chat(
+                    model=request.model, 
+                    messages=request.messages, 
+                    stream=True,
+                    options={'temperature': request.temperature}
+                )
+                for chunk in stream:
+                    content = chunk['message']['content']
+                    if content:
+                        yield content
+                        full_response += content
+                
+                # Save assistant message
+                if request.session_id and full_response:
+                    messages_collection.insert_one({
+                        "user_id": request.user_id,
+                        "session_id": request.session_id,
+                        "role": "assistant",
+                        "content": full_response,
+                        "created_at": datetime.now()
+                    })
+            except Exception as e:
+                error_msg = f"\n\n[Error: {str(e)}. Please check if Ollama is running and the model is available.]"
+                yield error_msg
+                print(f"Error in chat stream: {e}")
 
         return StreamingResponse(generate(), media_type="text/plain")
     except Exception as e:

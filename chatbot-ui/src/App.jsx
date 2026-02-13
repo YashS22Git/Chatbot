@@ -23,6 +23,7 @@ function App() {
   const [selectedModel, setSelectedModel] = useState('')
   const [sessions, setSessions] = useState([])
   const [currentSessionId, setCurrentSessionId] = useState(null)
+  const [temperature, setTemperature] = useState(0.7)
 
   // Check auth state
   useEffect(() => {
@@ -139,9 +140,14 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: selectedModel,
-          messages: [...messages, userMessage],
+          messages: [
+            { role: 'system', content: 'You are a highly intelligent AI assistant. Provide clear, accurate, and helpful responses. Think step by step when solving problems.' },
+            ...messages,
+            userMessage
+          ],
           session_id: sessionId,
-          user_id: user.uid
+          user_id: user.uid,
+          temperature: temperature
         })
       })
 
@@ -203,12 +209,26 @@ function App() {
       <div className="main-content">
         <header className="app-header">
           <h1>Ollama Chat</h1>
-          <div className="model-selector">
-            <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} disabled={models.length === 0}>
-              {models.map(model => (
-                <option key={model} value={model}>{model}</option>
-              ))}
-            </select>
+          <div className="header-controls">
+            <div className="model-selector">
+              <label>Model:</label>
+              <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} disabled={models.length === 0}>
+                {models.map(model => (
+                  <option key={model} value={model}>{model}</option>
+                ))}
+              </select>
+            </div>
+            <div className="temperature-control">
+              <label>Temperature: {temperature.toFixed(1)}</label>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value))}
+              />
+            </div>
           </div>
         </header>
         <main className="chat-container">
