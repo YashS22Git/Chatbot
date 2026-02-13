@@ -79,11 +79,12 @@ def get_history(user_id: str):
     return {"sessions": sessions}
 
 @app.get("/api/history/{user_id}/{session_id}")
-def get_session_history(user_id: str, session_id: str):
-    messages = list(messages_collection.find(
+async def get_session_history(user_id: str, session_id: str):
+    # Get messages for a specific session
+    messages = list(db.messages.find(
         {"user_id": user_id, "session_id": session_id},
-        {"user_id": 0, "session_id": 0, "_id": 0}
-    ).sort("created_at", 1))
+        {"_id": 0}
+    ).sort("created_at", 1)) # Assuming 'created_at' is the correct field, not 'timestamp'
     
     # Convert datetime to ISO format
     for msg in messages:
@@ -143,6 +144,18 @@ async def chat(request: ChatRequest):
                 })
 
         return StreamingResponse(generate(), media_type="text/plain")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/history/{user_id}/{session_id}")
+async def delete_session(user_id: str, session_id: str):
+    """Delete a chat session and all its messages"""
+    try:
+        # Delete session from sessions collection
+        sessions_collection.delete_one({"user_id": user_id, "session_id": session_id})
+        # Delete all messages from messages collection
+        messages_collection.delete_many({"user_id": user_id, "session_id": session_id})
+        return {"status": "deleted", "session_id": session_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

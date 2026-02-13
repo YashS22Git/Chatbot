@@ -34,12 +34,30 @@
     overflow-y: auto;
 }
 
+.sidebar-footer {
+    padding: 15px 12px;
+    border-top: 1px solid #2f2f2f;
+    background-color: #171717;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .session-item {
-    padding: 10px 15px;
-    cursor: pointer;
-    border-radius: 5px;
-    margin: 5px 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin: 2px 0;
     transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.session-content {
+    flex: 1;
+    cursor: pointer;
+    overflow: hidden;
 }
 
 .session-item:hover {
@@ -61,4 +79,27 @@
     font-size: 10px;
     color: #8e8ea0;
     margin-top: 4px;
+}
+
+.delete-session-btn {
+    background: transparent;
+    border: none;
+    color: #8e8ea0;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    opacity: 0;
+}
+
+.session-item:hover .delete-session-btn {
+    opacity: 1;
+}
+
+.delete-session-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
 }

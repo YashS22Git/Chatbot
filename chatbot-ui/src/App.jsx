@@ -69,6 +69,26 @@ function App() {
     setMessages([{ role: 'assistant', content: 'Hello! I am your local AI assistant. How can I help you today?' }]);
   }
 
+  const deleteSession = async (sessionId) => {
+    if (!confirm('Are you sure you want to delete this chat?')) return;
+
+    try {
+      await fetch(`http://localhost:8000/api/history/${user.uid}/${sessionId}`, {
+        method: 'DELETE'
+      });
+
+      // If deleting current session, start new chat
+      if (sessionId === currentSessionId) {
+        startNewChat();
+      }
+
+      // Refresh history
+      fetchHistory();
+    } catch (err) {
+      console.error('Failed to delete session', err);
+    }
+  };
+
   const loadSession = (sessionId) => {
     setCurrentSessionId(sessionId);
     setIsLoading(true);
@@ -176,26 +196,19 @@ function App() {
         currentSessionId={currentSessionId}
         onSelectSession={loadSession}
         onNewChat={startNewChat}
+        user={user}
+        onLogout={handleLogout}
+        onDeleteSession={deleteSession}
       />
       <div className="main-content">
         <header className="app-header">
           <h1>Ollama Chat</h1>
-          <div className="header-right">
-            <div className="model-selector">
-              <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} disabled={models.length === 0}>
-                {models.map(model => (
-                  <option key={model} value={model}>{model}</option>
-                ))}
-              </select>
-            </div>
-            <div className="user-info">
-              <span className="user-email">{user.email || user.displayName}</span>
-              <button className="logout-btn" onClick={handleLogout} title="Logout">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                  <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
-                </svg>
-              </button>
-            </div>
+          <div className="model-selector">
+            <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)} disabled={models.length === 0}>
+              {models.map(model => (
+                <option key={model} value={model}>{model}</option>
+              ))}
+            </select>
           </div>
         </header>
         <main className="chat-container">
