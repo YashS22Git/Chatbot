@@ -1,6 +1,16 @@
-
 node_modules/
-.env
 dist/
 build/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.db
+debug_output.txt
+
+# Env & Logs
+.env
 *.log
